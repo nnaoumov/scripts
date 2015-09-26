@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# This script fetches the latest list of AWS subnets
+# and automatically adds them to the routing table
+# via the specified interface
+# On osx this file lives in /etc/ppp/ip-up
+IFACE=ppp0
+
+logger "$0 Adding AWS EC2 nodes to routing table for $IFACE"
+IPLIST=($(curl -silent -L https://ip-ranges.amazonaws.com/ip-ranges.json |grep 'service": "EC2"' -B2|grep ip_prefix|cut -f 2 -d :|cut -f2 -d '"'))
+logger "$0 ${#IPLIST[@]} subnets found"
+
+COUNTER=0
+for r in ${IPLIST[@]}; do 
+  #logger "adding $r"
+  /sbin/route add $r -interface $IFACE && COUNTER=$((COUNTER + 1))
+done 
+logger "$0 $COUNTER routes added"
+
+OFFICEIPS=172.16.0.118/16 
+/sbin/route add $OFFICEIPS -interface $IFACE
+logger "$0 Adding office subet $OFFICEIPS to routing table for $IFACE"
