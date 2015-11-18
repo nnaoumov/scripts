@@ -17,6 +17,6 @@ for r in ${IPLIST[@]}; do
 done 
 logger "$0 $COUNTER routes added"
 
-OFFICEIPS=172.16.0.118/16 
+OFFICEIPS=172.16.0.0/12
 /sbin/route add $OFFICEIPS -interface $IFACE
 logger "$0 Adding office subet $OFFICEIPS to routing table for $IFACE"
